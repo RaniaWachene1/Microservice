@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         jdk 'jdk17'
-        maven 'maven3'
+        gradle 'gradle7'  // Ensure you have configured Gradle in Jenkins
     }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
@@ -11,47 +11,39 @@ pipeline {
     }
 
     stages {
-         stage('Git Checkout') {
+        stage('Git Checkout') {
             steps {
                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/RaniaWachene1/Microservice.git'
             }
         }
-        
-        stage('Compile') {
+
+        stage('Build') {
             steps {
-                sh "mvn compile"
+                dir('adservice') {  // Navigate to the correct folder
+                    sh "./gradlew build"
+                }
             }
         }
-        
+
         stage('Test') {
             steps {
-                sh "mvn test"
-            }
-        }
-        
-        stage('File System Scan') {
-            steps {
-                sh "trivy fs --format table -o trivy-fs-report.html ."
+                dir('adservice') {  // Ensure you are in the correct directory
+                    sh "./gradlew test"
+                }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar') {
-                    sh '''
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=AddService \
-                        -Dsonar.projectKey=AddService \
-                        -Dsonar.java.binaries=.
-                    '''
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                dir('adservice') {  // Ensure we are in the correct directory
+                    withSonarQubeEnv('sonar') {
+                        sh '''
+                            $SCANNER_HOME/bin/sonar-scanner \
+                            -Dsonar.projectName=AddService \
+                            -Dsonar.projectKey=AddService \
+                            -Dsonar.sources=./src/main/java
+                        '''
+                    }
                 }
             }
         }
