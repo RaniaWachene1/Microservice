@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    tools {
+        jdk 'jdk17'
+        maven 'maven3'
+    }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
@@ -7,6 +11,24 @@ pipeline {
     }
 
     stages {
+         stage('Git Checkout') {
+            steps {
+               git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/RaniaWachene1/Microservice.git'
+            }
+        }
+        
+        stage('Compile') {
+            steps {
+                sh "mvn compile"
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh "mvn test"
+            }
+        }
+        
         stage('File System Scan') {
             steps {
                 sh "trivy fs --format table -o trivy-fs-report.html ."
