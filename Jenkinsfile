@@ -34,6 +34,13 @@ pipeline {
             }
         }
         
+        stage('OWASP Dependency Check') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DC'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+           }
+        }
+
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -61,6 +68,21 @@ pipeline {
                     sh "docker push ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
                 }
             }
+        }
+
+        stage('Docker Image Scan') {
+            steps {
+                sh "trivy image --format table -o trivy-image-report.html ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive reports for all security scans and artifacts
+            archiveArtifacts artifacts: '**/dependency-check-report.xml', allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/trivy-fs-report.html', allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/trivy-image-report.html', allowEmptyArchive: true
         }
     }
 }
