@@ -2,7 +2,6 @@ pipeline {
     agent any
     tools {
         jdk 'jdk17'
-        gradle 'gradle7'  // Ensure you have configured Gradle in Jenkins
     }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
@@ -17,17 +16,29 @@ pipeline {
             }
         }
         
+        stage('File System Scan') {
+            steps {
+                sh "trivy fs --format table -o trivy-fs-report.html ."
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
-                dir('adservice') {  // Ensure we are in the correct directory
-                    withSonarQubeEnv('sonar') {
-                        sh '''
-                            $SCANNER_HOME/bin/sonar-scanner \
-                            -Dsonar.projectName=AddService \
-                            -Dsonar.projectKey=AddService \
-                            -Dsonar.sources=./src/main/java
-                        '''
-                    }
+                withSonarQubeEnv('sonar') {
+                    sh '''
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectName=AddService \
+                        -Dsonar.projectKey=AddService \
+                        -Dsonar.java.binaries=.
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
         }
