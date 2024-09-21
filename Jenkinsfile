@@ -3,16 +3,14 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
-        IMAGE_NAME = 'cart-service'
+        IMAGE_NAME = 'cartservice'
     }
     
     stages {
-        stage('Git Checkout') {
-            steps {
-                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/RaniaWachene1/Microservice.git'
-            }
-        }
-        
+        // Add a secrets scanning stage here
+
+        // Add SAST tool like Checkmarx or Semgrep for deeper code security analysis
+
         stage('File System Scan') {
             steps {
                 sh "trivy fs --format table -o trivy-fs-report.html ."
@@ -24,14 +22,16 @@ pipeline {
                 withSonarQubeEnv('sonar') {
                     sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=CartService \
-                        -Dsonar.projectKey=CartService \
+                        -Dsonar.projectName=AddService \
+                        -Dsonar.projectKey=AddService \
                         -Dsonar.java.binaries=.
                     '''
                 }
             }
         }
 
+        // Add infrastructure as code (IaC) scan if using Terraform, etc.
+        
         stage('Quality Gate') {
             steps {
                 script {
@@ -60,11 +60,13 @@ pipeline {
 
         stage('Build & Tag Docker Image') {
             steps {
-                dir('cart-service') {  // Ensure we are in the correct directory containing the Dockerfile
+                script {
                     sh "docker build -t ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest ."
                 }
             }
         }
+
+        // Add integration testing stage here
 
         stage('Login to Nexus Docker Registry') {
             steps {
@@ -78,7 +80,7 @@ pipeline {
 
         stage('Push Docker Image to Nexus') {
             steps {
-                dir('cart-service') {  // Ensure we're in the right directory
+                script {
                     sh "docker push ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
                 }
             }
@@ -89,6 +91,10 @@ pipeline {
                 sh "trivy image --timeout 10m --scanners vuln --format table -o trivy-image-report.html ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
             }
         }
+
+        // Add dynamic application security testing (DAST) using OWASP ZAP for runtime security tests
+
+        // Add Canary or Blue-Green Deployment if needed
     }
 
     post {
