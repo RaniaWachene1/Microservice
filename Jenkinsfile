@@ -7,7 +7,12 @@ pipeline {
     }
     
     stages {
-   
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/RaniaWachene1/Microservice.git'
+            }
+        }
+        
         stage('File System Scan') {
             steps {
                 sh "trivy fs --format table -o trivy-fs-report.html ."
@@ -27,8 +32,6 @@ pipeline {
             }
         }
 
-        // Add infrastructure as code (IaC) scan if using Terraform, etc.
-        
         stage('Quality Gate') {
             steps {
                 script {
@@ -57,13 +60,11 @@ pipeline {
 
         stage('Build & Tag Docker Image') {
             steps {
-                script {
+                dir('cart-service') {  // Ensure we are in the correct directory containing the Dockerfile
                     sh "docker build -t ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest ."
                 }
             }
         }
-
-        // Add integration testing stage here
 
         stage('Login to Nexus Docker Registry') {
             steps {
@@ -77,7 +78,7 @@ pipeline {
 
         stage('Push Docker Image to Nexus') {
             steps {
-                script {
+                dir('cart-service') {  // Ensure we're in the right directory
                     sh "docker push ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
                 }
             }
@@ -88,10 +89,6 @@ pipeline {
                 sh "trivy image --timeout 10m --scanners vuln --format table -o trivy-image-report.html ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
             }
         }
-
-        // Add dynamic application security testing (DAST) using OWASP ZAP for runtime security tests
-
-        // Add Canary or Blue-Green Deployment if needed
     }
 
     post {
