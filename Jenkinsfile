@@ -4,36 +4,12 @@ pipeline {
         SCANNER_HOME = tool 'sonar-scanner'
         NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
         IMAGE_NAME = 'adservice'
-        VAULT_CREDENTIALS = credentials('vault-approle')  // Use Vault AppRole credentials stored in Jenkins
     }
 
     stages {
         stage('File System Scan') {
             steps {
                 sh "trivy fs --format table -o trivy-fs-report.html ."
-            }
-        }
-
-        stage('Retrieve Secrets from Vault') {
-            steps {
-                script {
-                    withVault([
-                        vaultSecrets: [[
-                            path: 'secret/data/your-app-secrets',  // Path to your secrets in Vault
-                            secretValues: [
-                                [envVar: 'SECRET_API_KEY', vaultKey: 'api_key'],
-                                [envVar: 'DB_PASSWORD', vaultKey: 'db_password']
-                            ]
-                        ]],
-                        // Vault AppRole Authentication
-                        vaultAppRole: [
-                            roleId: VAULT_CREDENTIALS,  // Role ID from Jenkins credentials
-                            secretId: VAULT_CREDENTIALS // Secret ID from Jenkins credentials
-                        ]
-                    ]) {
-                        echo "Secrets retrieved successfully from Vault!"
-                    }
-                }
             }
         }
 
