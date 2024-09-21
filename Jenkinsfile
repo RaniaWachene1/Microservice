@@ -59,13 +59,14 @@ pipeline {
         }
 
         stage('Build & Tag Docker Image') {
+             dir('src') {
             steps {
                 script {
                     sh "docker build -t ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest ."
                 }
             }
         }
-
+        }
         // Add integration testing stage here
 
         stage('Login to Nexus Docker Registry') {
