@@ -1,21 +1,16 @@
 pipeline {
     agent any
-    tools {
-        jdk 'jdk17'
-    }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
         IMAGE_NAME = 'adservice'
     }
-
+    
     stages {
-        stage('Git Checkout') {
-            steps {
-               git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/RaniaWachene1/Microservice.git'
-            }
-        }
-        
+        // Add a secrets scanning stage here
+
+        // Add SAST tool like Checkmarx or Semgrep for deeper code security analysis
+
         stage('File System Scan') {
             steps {
                 sh "trivy fs --format table -o trivy-fs-report.html ."
@@ -35,6 +30,8 @@ pipeline {
             }
         }
 
+        // Add infrastructure as code (IaC) scan if using Terraform, etc.
+        
         stage('Quality Gate') {
             steps {
                 script {
@@ -47,7 +44,6 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                        // Running OWASP Dependency-Check with the NVD API key
                         dependencyCheck additionalArguments: '''
                             --scan ./ \
                             --format ALL \
@@ -56,7 +52,6 @@ pipeline {
                             --nvdApiKey ${NVD_API_KEY}
                         ''', odcInstallation: 'DC'
 
-                        // Publish the Dependency-Check report
                         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                     }
                 }
@@ -66,16 +61,16 @@ pipeline {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    // Build and tag the Docker image with the Nexus repository URL
                     sh "docker build -t ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest ."
                 }
             }
         }
 
+        // Add integration testing stage here
+
         stage('Login to Nexus Docker Registry') {
             steps {
                 script {
-                    // Use stored credentials to log into the Nexus Docker registry securely using --password-stdin
                     withCredentials([usernamePassword(credentialsId: 'nexus-docker-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                         sh "echo $PASS | docker login ${NEXUS_DOCKER_REPO} -u $USER --password-stdin"
                     }
@@ -86,7 +81,6 @@ pipeline {
         stage('Push Docker Image to Nexus') {
             steps {
                 script {
-                    // Push the Docker image to the Nexus Docker registry
                     sh "docker push ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
                 }
             }
@@ -97,11 +91,14 @@ pipeline {
                 sh "trivy image --timeout 10m --scanners vuln --format table -o trivy-image-report.html ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
             }
         }
+
+        // Add dynamic application security testing (DAST) using OWASP ZAP for runtime security tests
+
+        // Add Canary or Blue-Green Deployment if needed
     }
 
     post {
         always {
-            // Archive reports for all security scans and artifacts
             archiveArtifacts artifacts: '**/dependency-check-report.xml', allowEmptyArchive: true
             archiveArtifacts artifacts: '**/trivy-fs-report.html', allowEmptyArchive: true
             archiveArtifacts artifacts: '**/trivy-image-report.html', allowEmptyArchive: true
