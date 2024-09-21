@@ -3,7 +3,7 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
-        IMAGE_NAME = 'cartservice'
+        IMAGE_NAME = 'cart-service'
     }
     
     stages {
