@@ -46,9 +46,9 @@ pipeline {
         stage('Login to Nexus Docker Registry') {
             steps {
                 script {
-                    // Use stored credentials to log into the Nexus Docker registry
+                    // Use stored credentials to log into the Nexus Docker registry securely using --password-stdin
                     withCredentials([usernamePassword(credentialsId: 'nexus-docker-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "docker login ${NEXUS_DOCKER_REPO} -u $USER -p $PASS"
+                        sh "echo $PASS | docker login ${NEXUS_DOCKER_REPO} -u $USER --password-stdin"
                     }
                 }
             }
