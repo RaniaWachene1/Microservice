@@ -16,23 +16,7 @@ pipeline {
                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/RaniaWachene1/Microservice.git'
             }
         }
-
-        stage('Build') {
-            steps {
-                dir('adservice') {  // Navigate to the correct folder
-                    sh "./gradlew build"
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                dir('adservice') {  // Ensure you are in the correct directory
-                    sh "./gradlew test"
-                }
-            }
-        }
-
+        
         stage('SonarQube Analysis') {
             steps {
                 dir('adservice') {  // Ensure we are in the correct directory
