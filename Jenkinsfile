@@ -36,15 +36,19 @@ pipeline {
         
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    odcInstallation: 'DC'
-                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-        
-        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-           }
+                script {
+                    // Running OWASP Dependency-Check
+                    dependencyCheck additionalArguments: '''
+                        --scan ./ \
+                        --format ALL \
+                        --out . \
+                        --prettyPrint
+                    ''', odcInstallation: 'DC'
+                    
+                    // Publish the Dependency-Check report
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
         }
 
         stage('Build & Tag Docker Image') {
