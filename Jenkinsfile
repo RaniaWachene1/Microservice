@@ -7,9 +7,7 @@ pipeline {
     }
     
     stages {
-        // Add a secrets scanning stage here
-
-        // Add SAST tool like Checkmarx or Semgrep for deeper code security analysis
+ 
 
         stage('File System Scan') {
             steps {
@@ -58,15 +56,16 @@ pipeline {
             }
         }
 
-        stage('Build & Tag Docker Image') {
-             dir('src') {
-            steps {
-                script {
-                    sh "docker build -t ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest ."
-                }
+ stage('Build & Tag Docker Image') {
+    steps {
+        dir('src') {  // Navigate to the 'src' directory containing Dockerfile
+            script {
+                sh "docker build -t ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest ."
             }
         }
-        }
+    }
+}
+
         // Add integration testing stage here
 
         stage('Login to Nexus Docker Registry') {
