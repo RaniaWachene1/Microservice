@@ -2,6 +2,8 @@ pipeline {
     agent any
      environment {
         SCANNER_HOME= tool 'sonar-scanner'
+        NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
+        IMAGE_NAME = 'myapp'
     }
     
     stages {
@@ -36,7 +38,26 @@ pipeline {
                 }
             }
         }
-        
+        stage('Login to Nexus Docker Registry') {
+            steps {
+                script {
+                    // Use stored credentials to log into the Nexus Docker registry
+                    withCredentials([usernamePassword(credentialsId: 'nexus-docker-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh "docker login ${NEXUS_DOCKER_REPO} -u $USER -p $PASS"
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image to Nexus') {
+            steps {
+                script {
+                    // Push the Docker image to the Nexus Docker registry
+                    sh "docker push ${NEXUS_DOCKER_REPO}/${IMAGE_NAME}:latest"
+                }
+            }
+        }
+    }
         stage('Push Docker Image') {
             steps {
                 script {
