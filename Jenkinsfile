@@ -3,7 +3,7 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         NEXUS_DOCKER_REPO = '192.168.80.142:5000'  // Nexus IP and Docker registry port
-        IMAGE_NAME = 'payment-tservice'
+        IMAGE_NAME = 'payment-service'
     }
     
     stages {
@@ -19,8 +19,8 @@ pipeline {
                 withSonarQubeEnv('sonar') {
                     sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=AddService \
-                        -Dsonar.projectKey=AddService \
+                        -Dsonar.projectName=PaymentService \
+                        -Dsonar.projectKey=PaymentService \
                         -Dsonar.java.binaries=.
                     '''
                 }
