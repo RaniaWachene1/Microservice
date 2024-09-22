@@ -12,7 +12,7 @@ spec:
       labels:
         app: emailservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -80,7 +80,7 @@ spec:
       labels:
         app: checkoutservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       containers:
@@ -143,7 +143,7 @@ spec:
       labels:
         app: recommendationservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -203,7 +203,7 @@ spec:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       containers:
@@ -301,7 +301,7 @@ spec:
       labels:
         app: paymentservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -355,7 +355,7 @@ spec:
       labels:
         app: productcatalogservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -409,7 +409,7 @@ spec:
       labels:
         app: cartservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -467,7 +467,7 @@ spec:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -508,7 +508,7 @@ spec:
       labels:
         app: currencyservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -563,7 +563,7 @@ spec:
       labels:
         app: shippingservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       containers:
@@ -670,7 +670,7 @@ spec:
       labels:
         app: adservice
     spec:
-     imagePullSecrets:
+      imagePullSecrets:
         - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
