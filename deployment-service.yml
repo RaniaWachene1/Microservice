@@ -28,7 +28,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: 192.168.80.142:5000/emailservice:latest
+        image: 192.168.80.142:5000/email-service:latest
         ports:
         - containerPort: 8080
         env:
@@ -81,7 +81,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: 192.168.80.142:5000/checkoutservice:latest
+          image: 192.168.80.142:5000/checkout-service:latest
           ports:
           - containerPort: 5050
           readinessProbe:
@@ -143,7 +143,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: 192.168.80.142:5000/recommendationservice:latest
+        image: 192.168.80.142:5000/recommendation-service:latest
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -200,7 +200,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: 192.168.80.142:5000/frontendservice:latest
+          image: 192.168.80.142:5000/frontend-service:latest
           ports:
           - containerPort: 8080
           readinessProbe:
@@ -297,7 +297,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: 192.168.80.142:5000/paymentservice:latest
+        image: 192.168.80.142:5000/payment-service:latest
         ports:
         - containerPort: 50051
         env:
@@ -349,7 +349,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: 192.168.80.142:5000/productservice:latest
+        image: 192.168.80.142:5000/product-service:latest
         ports:
         - containerPort: 3550
         env:
@@ -465,7 +465,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: 192.168.80.142:5000/loadservice:latest
+        image: 192.168.80.142:5000/load-service:latest
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
@@ -496,7 +496,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: 192.168.80.142:5000/currencyservice:latest
+        image: 192.168.80.142:5000/currency-service:latest
         ports:
         - name: grpc
           containerPort: 7000
@@ -548,7 +548,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: server
-        image: 192.168.80.142:5000/shippingservice:latest
+        image: 192.168.80.142:5000/shipping-service:latest
         ports:
         - containerPort: 50051
         env:
