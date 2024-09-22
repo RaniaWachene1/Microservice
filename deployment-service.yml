@@ -13,7 +13,7 @@ spec:
         app: emailservice
     spec:
       imagePullSecrets:
-        - name: nexus-registry-secret1  # Add this line to reference the secret
+        - name: nexus-registry-secret  # Add this line to reference the secret
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
       securityContext:
