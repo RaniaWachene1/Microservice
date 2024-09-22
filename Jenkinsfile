@@ -125,7 +125,8 @@ post {
                 from: 'raniawachen21@gmail.com',
                 replyTo: 'rania.wachene@esprit.tn',
                 mimeType: 'text/html',
-                attachmentsPattern: 'trivy-image-report.html'
+                attachmentsPattern: '**/dependency-check-report.xml,**/trivy-fs-report.html,**/trivy-image-report.html'
+
             )
         }
         archiveArtifacts artifacts: '**/dependency-check-report.xml', allowEmptyArchive: true
