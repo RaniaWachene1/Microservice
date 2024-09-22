@@ -19,8 +19,8 @@ pipeline {
                 withSonarQubeEnv('sonar') {
                     sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=AddService \
-                        -Dsonar.projectKey=AddService \
+                        -Dsonar.projectName=CheckoutService \
+                        -Dsonar.projectKey=CheckoutService \
                         -Dsonar.java.binaries=.
                     '''
                 }
